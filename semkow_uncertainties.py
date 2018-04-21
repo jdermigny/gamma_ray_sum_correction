@@ -54,11 +54,13 @@ def main():
     """ First, read header"""
     numLevels = int(content[1].split()[0])+1
 
+    """ Read Energy Levels"""
     for i in range(0,len(content)):
         if re.search("Energy-Levels",content[i]):
            energies  = np.array(map(lambda v: float(v[0]),map(lambda b: b.split() ,content[i+1:i+1+numLevels])))
            f         = np.array(map(lambda v: float(v[1]),map(lambda b: b.split() ,content[i+1:i+1+numLevels])))
 
+    """ Read Measured g-ray intensities"""
     for i in range(0,len(content)):
         if re.search("Measured",content[i]):
             measuredline = i
@@ -68,6 +70,7 @@ def main():
                 measuredExp[int(j[0]),int(j[1])]    = j[2]
                 measuredExpErr[int(j[0]),int(j[1])] = j[3]
 
+    """ Read Branching Ratios"""
     for i in range(0,len(content)):
         if re.search("B-Values",content[i]):
             branchingline = i
@@ -82,25 +85,6 @@ def main():
 
     measured = np.mat([[0]*numLevels]*numLevels,dtype=float)
 
-    """
-    measuredExp[1][0] = 55515.0
-    measuredExp[3][0] = 4424.0
-    measuredExp[6][3] = 5633.0
-    measuredExp[6][1] = 3977.0
-    measuredExp[6][0] = 3383.0
-    measuredExp[13][6] = 6996.7
-    measuredExp[13][4] = 11848.0
-    measuredExp[13][1] = 2478.0
-
-    measuredExpErr[1][0] = 320.0
-    measuredExpErr[3][0] = 102.0
-    measuredExpErr[6][3] = 113.0
-    measuredExpErr[6][1] = 104.0
-    measuredExpErr[6][0] = 84.0
-    measuredExpErr[13][6] = 109.0
-    measuredExpErr[13][4] = 138.0
-    measuredExpErr[13][1] = 86.0
-    """
     
     index = 0
     for j in range(0,numLevels):
@@ -282,29 +266,6 @@ def main():
                 Ej=energies[j]
                 Ei=energies[i]
                 print "{0:1.4f}\t\t{1:1.5f}\t\t{2:1.5f}\t\t{3:1.5f}".format(Ej-Ei,np.percentile(table[index],16), np.percentile(table[index],50),np.percentile(table[index],84))
-    """
-    print "{0}\t\t\t\t\t{1}\t{2}".format("Energy","--no summing effects--"," --with coincidence summing--")
-    for j in range(0,numLevels):
-        for i in range(0,j):
-            if S_c.getA()[j][i] != 0.0:
-                Ej=energies[j]
-                Ei=energies[i]
-                no_summing = S_nc.getA()[j][i]
-                with_summing = S_c.getA()[j][i]
-                print "{0:6.1f} -> {1:6.1f} ({4:4.1f} keV)\t\t{2:10}\t\t{3:10}\t\t{5:2.2f}".format(Ej,Ei,no_summing,with_summing,(Ej-Ei),100.0*(no_summing/with_summing))
-    for j in range(0,numLevels):
-        for i in range(0,j):
-            if S_c.getA()[j][i] != 0.0:
-                Ej=energies.getA1()[j]
-                Ei=energies.getA1()[i]
-                print "{0:6.1f} -> {1:6.1f} ({2:4.1f} keV)\t\t{3:10}\t\t{4:10}".format(Ej,Ei,(Ej-Ei), e_p.getA()[j][i], S_c.getA()[j][i]/I.getA()[j][i])
 
-    for j in range(0,numLevels):
-        for i in range(0,j):
-            if S_c.getA()[j][i] != 0.0:
-                Ej=energies.getA1()[j]
-                Ei=energies.getA1()[i]
-                print "{0:6.1f} -> {1:6.1f} ({2:4.1f} keV)\t\t{3:10}".format(Ej,Ei,(Ej-Ei), I.getA()[j][i])
-    """
 if __name__ == '__main__':
     main()
